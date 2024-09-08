@@ -72,3 +72,51 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = api_models.Profile
         fields = '__all__'
+
+class CategorySerializer(serializers.ModelSerializer):
+    post_count = serializers.SerializerMethodField()
+
+    def get_post_count(self, category):
+        return category.posts.count()
+    
+    class Meta:
+        model = api_models.Category
+        fields = [
+            "id",
+            "title",
+            "image",
+            "slug",
+            "post_count",
+        ]
+
+class CommentSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = api_models.Comment
+        fields = "__all__"
+        
+class PostSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True)
+    
+    class Meta:
+        model = api_models.Post
+        fields = "__all__"
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = api_models.Bookmark
+        fields = "__all__"
+
+    
+class NotificationSerializer(serializers.ModelSerializer):  
+
+    class Meta:
+        model = api_models.Notification
+        fields = "__all__"
+
+class AuthorStats(serializers.Serializer):
+    views = serializers.IntegerField(default=0)
+    posts = serializers.IntegerField(default=0)
+    likes = serializers.IntegerField(default=0)
+    bookmarks = serializers.IntegerField(default=0)

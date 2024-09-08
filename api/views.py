@@ -7,6 +7,14 @@ from rest_framework.permissions import AllowAny
 import json
 import random
 
+from rest_framework import status
+from rest_framework.decorators import api_view, APIView
+from rest_framework.response import Response
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from datetime import datetime
+
 # Custom Imports
 from api import serializer as api_serializer
 from api import models as api_models
@@ -38,3 +46,23 @@ def generate_numeric_otp(length=7):
         # Generate a random 7-digit OTP
         otp = ''.join([str(random.randint(0, 9)) for _ in range(length)])
         return otp
+    
+    
+# Category Post api
+
+class CategoryListAPIView(generics.ListAPIView):
+    serializer_class = api_serializer.CategorySerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return api_models.Category.objects.all()
+
+class PostCategoryListAPIView(generics.ListAPIView):
+    serializer_class = api_serializer.PostSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        category_slug = self.kwargs['category_slug'] 
+        category = api_models.Category.objects.get(slug=category_slug)
+        return api_models.Post.objects.filter(category=category, status="Active")
+
