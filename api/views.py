@@ -240,7 +240,8 @@ class DashboardCommentLists(generics.ListAPIView):
         user_id = self.kwargs['user_id']
         user = api_models.User.objects.get(id=user_id)
 
-        return api_models.Comment.objects.filter(user=user).order_by("-id")
+        # Filter comments related to posts authored by the user
+        return api_models.Comment.objects.filter(post__user=user).order_by("-id")
 
 class DashboardNotificationLists(generics.ListAPIView):
     serializer_class = api_serializer.NotificationSerializer
